@@ -97,39 +97,57 @@ extension Group: DynamicNodeDecoding {
 // MARK: - Paths
 public extension Group {
     /// A representation of all the sub-`Path`s in the `Group`.
-    func subpaths(applying transformations: [Transformation] = []) throws -> [Path] {
+    func subpaths(applying transformations: [Transformation] = [], parentStroke: Stroke?, parentFill: Fill?) throws -> [Path] {
         var _transformations = transformations
         _transformations.append(contentsOf: self.transformations)
-        
+
+        var stroke = Stroke(color: strokeColor,
+                            width: strokeWidth,
+                            opacity: strokeOpacity,
+                            lineCap: strokeLineCap,
+                            lineJoin: strokeLineJoin,
+                            miterLimit: strokeMiterLimit)
+        var fill = Fill(color: fillColor,
+                        opacity: fillOpacity,
+                        rule: fillRule)
+
+
+        if let parent = parentStroke {
+            stroke.inherit(from: parent)
+        }
+        if let parent = parentFill {
+            fill.inherit(from: parent)
+        }
+
         var output: [Path] = []
         
         if let circles = self.circles {
-            try output.append(contentsOf: circles.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: circles.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let ellipses = self.ellipses {
-            try output.append(contentsOf: ellipses.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: ellipses.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let rectangles = self.rectangles {
-            try output.append(contentsOf: rectangles.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: rectangles.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let polygons = self.polygons {
-            try output.append(contentsOf: polygons.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: polygons.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let polylines = self.polylines {
-            try output.append(contentsOf: polylines.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: polylines.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let paths = self.paths {
-            try output.append(contentsOf: paths.map({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: paths.map({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let groups = self.groups {
             try groups.forEach({
-                try output.append(contentsOf: $0.subpaths(applying: _transformations))
+                try output.append(contentsOf: $0.subpaths(applying: _transformations, parentStroke: stroke, parentFill: fill))
             })
         }
         

@@ -127,34 +127,36 @@ public extension SVG {
     func subpaths() throws -> [Path] {
         var output: [Path] = []
         let _transformations: [Transformation] = []
+        let stroke = Stroke()
+        let fill = Fill()
         
         if let circles = self.circles {
-            try output.append(contentsOf: circles.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: circles.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let ellipses = self.ellipses {
-            try output.append(contentsOf: ellipses.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: ellipses.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let rectangles = self.rectangles {
-            try output.append(contentsOf: rectangles.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: rectangles.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let polygons = self.polygons {
-            try output.append(contentsOf: polygons.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: polygons.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let polylines = self.polylines {
-            try output.append(contentsOf: polylines.compactMap({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: polylines.compactMap({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let paths = self.paths {
-            try output.append(contentsOf: paths.map({ try $0.path(applying: _transformations) }))
+            try output.append(contentsOf: paths.map({ try $0.path(applying: _transformations, parentStroke: stroke, parentFill: fill) }))
         }
         
         if let groups = self.groups {
             try groups.forEach({
-                try output.append(contentsOf: $0.subpaths(applying: _transformations))
+                try output.append(contentsOf: $0.subpaths(applying: _transformations, parentStroke: stroke, parentFill: fill))
             })
         }
         

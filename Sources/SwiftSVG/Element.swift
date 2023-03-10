@@ -29,19 +29,34 @@ public extension CommandRepresentable where Self: Element {
     ///
     /// Than the path created will not only use 'absolute' instructions, but those instructions will be modified to
     /// include the required transformation.
-    func path(applying transformations: [Transformation] = []) throws -> Path {
+    func path(applying transformations: [Transformation] = [], parentStroke: Stroke?, parentFill: Fill?) throws -> Path {
         var _transformations = transformations
         _transformations.append(contentsOf: self.transformations)
-        
+
+        var stroke = Stroke(color: strokeColor,
+                            width: strokeWidth,
+                            opacity: strokeOpacity,
+                            lineCap: strokeLineCap,
+                            lineJoin: strokeLineJoin,
+                            miterLimit: strokeMiterLimit)
+        var fill = Fill(color: fillColor,
+                        opacity: fillOpacity,
+                        rule: fillRule)
+
+
+        if let parent = parentStroke {
+            stroke.inherit(from: parent)
+        }
+        if let parent = parentFill {
+            fill.inherit(from: parent)
+        }
+
         let commands = try self.commands().map({ $0.applying(transformations: _transformations) })
         
         var path = Path(commands: commands)
-        path.fillColor = fillColor
-        path.fillOpacity = fillOpacity
-        path.strokeColor = strokeColor
-        path.strokeOpacity = strokeOpacity
-        path.strokeWidth = strokeWidth
-        
+        path.fill = fill
+        path.stroke = stroke
+
         return path
     }
 }

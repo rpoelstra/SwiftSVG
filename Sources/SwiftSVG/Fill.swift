@@ -7,11 +7,23 @@ public struct Fill {
     public var rule: Rule = .nonZero
     
     public init(color: String?, opacity: Double?, rule: Rule?) {
-        self.color = color ?? "black"
+        self.color = color ?? "none"
         self.opacity = opacity ?? 1
         self.rule = rule ?? .nonZero
     }
-    
+
+    public init() {
+        self.init(color: nil,
+                  opacity: nil,
+                  rule: nil)
+    }
+
+    mutating func inherit(from parent: Fill) {
+        if color == "none" { color = parent.color }
+        if opacity == 1 { opacity = parent.opacity }
+        if rule == .nonZero { rule = parent.rule }
+    }
+
     /// Presentation attribute defining the algorithm to use to determine the inside part of a shape.
     ///
     /// The default `Rule` is `.nonzero`.

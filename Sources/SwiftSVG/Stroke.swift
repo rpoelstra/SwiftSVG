@@ -10,14 +10,32 @@ public struct Stroke {
     public var miterLimit: Double
     
     public init(color: String?, width: Double?, opacity: Double?, lineCap: LineCap?, lineJoin: LineJoin?, miterLimit: Double?) {
-        self.color = color ?? "black"
+        self.color = color ?? "none"
         self.width = width ?? 1
         self.opacity = opacity ?? 1
         self.lineCap = lineCap ?? .butt
         self.lineJoin = lineJoin ?? .miter
         self.miterLimit = miterLimit ?? 4
     }
-    
+
+    public init() {
+        self.init(color: nil,
+                  width: nil,
+                  opacity: nil,
+                  lineCap: nil,
+                  lineJoin: nil,
+                  miterLimit: nil)
+    }
+
+    mutating func inherit(from parent: Stroke) {
+        if color == "none" { color = parent.color }
+        if width == 1 { width = parent.width }
+        if opacity == 1 { opacity = parent.opacity }
+        if lineCap == .butt { lineCap = parent.lineCap }
+        if lineJoin == .miter { lineJoin = parent.lineJoin }
+        if miterLimit == 4 { miterLimit = parent.miterLimit }
+    }
+
     /// Presentation attribute defining the shape to be used at the end of open subpaths when they are stroked.
     ///
     /// The default `LineCap` is `.butt`
