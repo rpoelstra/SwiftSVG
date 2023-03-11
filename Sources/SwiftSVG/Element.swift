@@ -43,7 +43,32 @@ public extension CommandRepresentable where Self: Element {
                         opacity: fillOpacity,
                         rule: fillRule)
 
+        //Apply styling from the style attribute
+        if let style = style {
+            let components = style.split(separator: ";")
+            let properties = Dictionary(components.map({ component in
+                let keyAndValue = component.split(separator: ":")
+                return (keyAndValue[0], keyAndValue[1])
+            }),
+                                        uniquingKeysWith: {_, new in new})
 
+            for property in properties {
+                switch property.key {
+                case "stroke": stroke.color = String(property.value)
+                case "stoke-width": stroke.width = Double(property.value)!
+                case "stroke-opacity":  stroke.opacity = Double(property.value)!
+                case "stroke-linecap": stroke.lineCap = Stroke.LineCap(rawValue: String(property.value))!
+                case "stroke-linejoin": stroke.lineJoin = Stroke.LineJoin(rawValue: String(property.value))!
+                case "stroke-miterlimit": stroke.miterLimit = Double(property.value)!
+                case "fill": fill.color = String(property.value)
+                case "fill-opacity": fill.opacity = Double(property.value)!
+                case "fill-rule": fill.rule = Fill.Rule(rawValue: String(property.value))!
+                default: continue
+                }
+            }
+        }
+
+        //Consolidate stroke and fill with possible parent values
         if let parent = parentStroke {
             stroke.inherit(from: parent)
         }
