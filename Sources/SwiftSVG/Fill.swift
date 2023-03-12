@@ -7,7 +7,7 @@ public struct Fill {
     public var rule: Rule = .nonZero
     
     public init(color: String?, opacity: Double?, rule: Rule?) {
-        self.color = color ?? "none"
+        self.color = color ?? "black"
         self.opacity = opacity ?? 1
         self.rule = rule ?? .nonZero
     }
@@ -19,7 +19,7 @@ public struct Fill {
     }
 
     mutating func inherit(from parent: Fill) {
-        if color == "none" { color = parent.color }
+        if color == "black" { color = parent.color }
         if opacity == 1 { opacity = parent.opacity }
         if rule == .nonZero { rule = parent.rule }
     }
